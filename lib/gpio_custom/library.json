@@ -1,0 +1,9 @@
+{
+	"name": "gpio_custom",
+	"version": "1.0.0",
+	"description": "Library supports GPIO better",
+	"keywords": "gpio",
+	"frameworks": "arduino",
+	"platforms": "espressif8266",
+	"board": "any boards"
+}

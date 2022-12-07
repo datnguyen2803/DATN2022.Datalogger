@@ -1,17 +1,25 @@
-#include <Arduino.h>
+#define _____LIB_INCLUDE_____
+
+#include "common.h"
+#include "gpio_custom.h"
+
+#define _____MACRO_DEFINE_____
+
+#define LED_PIN LED_BUILTIN
+
+GPIO_Custom testLed(LED_PIN, (GPIO_MODE_e)eOUTPUT, (GPIO_STATE_e)eGPIO_STATE_LOW);
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  digitalWrite(LED_BUILTIN, 1);
+  testLed.setState((GPIO_STATE_e)eGPIO_STATE_LOW);
   Serial.println("LED on");
   delay(1000);
-  digitalWrite(LED_BUILTIN, 0);
+  testLed.setState((GPIO_STATE_e)eGPIO_STATE_HIGH);
   Serial.println("LED off");
   delay(1000);
 }
