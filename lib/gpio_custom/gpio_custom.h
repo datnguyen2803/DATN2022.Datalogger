@@ -22,7 +22,7 @@ public:
 	
 	uint8_t getPin(void);
 	GPIO_MODE_e getPinMode(void);
-	void setPinMode(GPIO_MODE_e _newPinMode);
+	ERR_TYPE_e setPinMode(GPIO_MODE_e _newPinMode);
 	GPIO_STATE_e getState(void);
 	ERR_TYPE_e setState(GPIO_STATE_e _state);
 	void setTimer(GPIO_STATE_e _startState, GPIO_STATE_e _endState, uint32_t _timeInterval);

@@ -7,13 +7,16 @@ GPIO_Custom::GPIO_Custom(uint8_t _pin, GPIO_MODE_e _pinMode)
 	eState = (GPIO_STATE_e) eGPIO_STATE_LOW;
 	pinMode(nPin, (uint8_t)ePinMode);
 	
-	if(eOUTPUT == ePinMode)
+	TRACE_LOG("=== Construct: Pin %d, mode %d", nPin, ePinMode);
+	if(eGPIO_MODE_OUTPUT == ePinMode)
 	{
 		digitalWrite(nPin, (uint8_t)eState);
+		TRACE_LOG(", state default %s ===\n", getGPIOModeName((GPIO_MODE_e)eState));
 	}
 	else
 	{
 		// do nothing
+		TRACE_LOG(" ===\n");
 	}
 }
 
@@ -25,16 +28,17 @@ GPIO_Custom::GPIO_Custom(uint8_t _pin, GPIO_MODE_e _pinMode, GPIO_STATE_e _state
 	pinMode(nPin, (uint8_t)ePinMode);
 	
 	// TODO: add debug code here
-
-	if(eOUTPUT == ePinMode)
+	TRACE_LOG("=== Construct: Pin %d, mode %d", nPin, ePinMode);
+	if(eGPIO_MODE_OUTPUT == ePinMode)
 	{
 		digitalWrite(nPin, (uint8_t)eState);
 		// TODO: add debug code here
-		
+		TRACE_LOG(", state %s ===\n", getGPIOModeName((GPIO_MODE_e)eState));
 	}
 	else
 	{
-		Serial.println("Unable to write to OUTPUT pin");
+		// do nothing
+		TRACE_LOG(" ===\n");
 	}
 }
 
@@ -48,14 +52,16 @@ GPIO_MODE_e GPIO_Custom::getPinMode(void)
 	return (GPIO_MODE_e)ePinMode;
 }
 
-void GPIO_Custom::setPinMode(GPIO_MODE_e _newPinMode)
+ERR_TYPE_e GPIO_Custom::setPinMode(GPIO_MODE_e _newPinMode)
 {
+	ERR_TYPE_e retVal = ERR_OK;
+
 	if(_newPinMode != ePinMode)
 	{
 		ePinMode = (GPIO_MODE_e)_newPinMode;
 		pinMode(nPin, (uint8_t)ePinMode);
 		
-		if(eOUTPUT == ePinMode)
+		if(eGPIO_MODE_OUTPUT == ePinMode)
 		{
 			eState = (GPIO_STATE_e) eGPIO_STATE_LOW;
 			digitalWrite(nPin, (uint8_t)eState);
@@ -64,11 +70,15 @@ void GPIO_Custom::setPinMode(GPIO_MODE_e _newPinMode)
 		{
 			// do nothing
 		}
+		retVal = ERR_OK;
 	}
 	else
 	{
-		Serial.println("Same pin mode, no changes");
+		TRACE_ERROR("Same mode, no change");
+		retVal = ERR_HAPPEN;
 	}
+
+	return (ERR_TYPE_e)retVal;
 }
 
 GPIO_STATE_e GPIO_Custom::getState(void)
@@ -101,7 +111,7 @@ GPIO_STATE_e GPIO_Custom::getState(void)
 
 ERR_TYPE_e GPIO_Custom::setState(GPIO_STATE_e _state)
 {
-	if(eOUTPUT != ePinMode)
+	if(eGPIO_MODE_OUTPUT != ePinMode)
 	{
 		Serial.println("Unable to set to NOT Output pin");
 		return (ERR_TYPE_e)ERR_HAPPEN;

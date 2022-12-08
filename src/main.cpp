@@ -17,9 +17,10 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   testLed.setState((GPIO_STATE_e)eGPIO_STATE_LOW);
-  Serial.println("LED on");
+  TRACE_LOG("Led state: %d", (uint8_t)testLed.getState());
   delay(1000);
   testLed.setState((GPIO_STATE_e)eGPIO_STATE_HIGH);
-  Serial.println("LED off");
+  // Serial.println("LED off");
+	TRACE_LOG("Led state: %d", (uint8_t)testLed.getState());
   delay(1000);
 }
