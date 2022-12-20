@@ -39,9 +39,9 @@ typedef enum
 
 typedef enum
 {
-	ERR_OK = 0,
-	ERR_HAPPEN
-}ERR_TYPE_e;
+	eERROR_TYPE_OK = 0,
+	eERROR_TYPE_HAPPEN
+}ERROR_TYPE_e;
 
 #define _____FUNCTION_PROTOTYPE_____
 void TRACE_PRINT(TRACE_LEVEL_e _level, char* _output, ...);

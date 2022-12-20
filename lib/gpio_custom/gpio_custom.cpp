@@ -52,9 +52,9 @@ GPIO_MODE_e GPIO_Custom::getPinMode(void)
 	return (GPIO_MODE_e)ePinMode;
 }
 
-ERR_TYPE_e GPIO_Custom::setPinMode(GPIO_MODE_e _newPinMode)
+ERROR_TYPE_e GPIO_Custom::setPinMode(GPIO_MODE_e _newPinMode)
 {
-	ERR_TYPE_e retVal = ERR_OK;
+	ERROR_TYPE_e retVal = eERROR_TYPE_OK;
 
 	if(_newPinMode != ePinMode)
 	{
@@ -70,15 +70,15 @@ ERR_TYPE_e GPIO_Custom::setPinMode(GPIO_MODE_e _newPinMode)
 		{
 			// do nothing
 		}
-		retVal = ERR_OK;
+		retVal = eERROR_TYPE_OK;
 	}
 	else
 	{
 		TRACE_ERROR("Same mode, no change");
-		retVal = ERR_HAPPEN;
+		retVal = eERROR_TYPE_HAPPEN;
 	}
 
-	return (ERR_TYPE_e)retVal;
+	return (ERROR_TYPE_e)retVal;
 }
 
 GPIO_STATE_e GPIO_Custom::getState(void)
@@ -95,7 +95,7 @@ GPIO_STATE_e GPIO_Custom::getState(void)
 		
 		case (GPIO_MODE_e) INPUT:
 			{
-				// do something here
+				eRetState = (GPIO_STATE_e)digitalRead(nPin);
 			}
 			break;
 		
@@ -109,18 +109,18 @@ GPIO_STATE_e GPIO_Custom::getState(void)
 	return (GPIO_STATE_e)eRetState;
 }
 
-ERR_TYPE_e GPIO_Custom::setState(GPIO_STATE_e _state)
+ERROR_TYPE_e GPIO_Custom::setState(GPIO_STATE_e _state)
 {
 	if(eGPIO_MODE_OUTPUT != ePinMode)
 	{
 		Serial.println("Unable to set to NOT Output pin");
-		return (ERR_TYPE_e)ERR_HAPPEN;
+		return (ERROR_TYPE_e)eERROR_TYPE_HAPPEN;
 	}
 	else
 	{
 		eState = (GPIO_STATE_e)_state;
 		digitalWrite(nPin, (uint8_t)eState);
-		return (ERR_TYPE_e)ERR_OK;
+		return (ERROR_TYPE_e)eERROR_TYPE_OK;
 	}
 }
 

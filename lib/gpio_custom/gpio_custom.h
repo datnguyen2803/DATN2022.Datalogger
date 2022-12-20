@@ -1,13 +1,12 @@
 #ifndef __GPIO_CUSTOM_H__
 #define __GPIO_CUSTOM_H__
 
-#define _____LIB_INCLUDE_____
+#define __________LIB_INCLUDE__________
 #include "common.h"
 
-#define _____ENUM_DEFINE_____
+#define __________ENUM_DEFINE__________
 
-
-#define _____CLASS_DEFINE_____
+#define __________CLASS_DEFINE__________
 
 class GPIO_Custom
 {
@@ -22,9 +21,9 @@ public:
 	
 	uint8_t getPin(void);
 	GPIO_MODE_e getPinMode(void);
-	ERR_TYPE_e setPinMode(GPIO_MODE_e _newPinMode);
+	ERROR_TYPE_e setPinMode(GPIO_MODE_e _newPinMode);
 	GPIO_STATE_e getState(void);
-	ERR_TYPE_e setState(GPIO_STATE_e _state);
+	ERROR_TYPE_e setState(GPIO_STATE_e _state);
 	void setTimer(GPIO_STATE_e _startState, GPIO_STATE_e _endState, uint32_t _timeInterval);
 	void stopTimer(void);
 
