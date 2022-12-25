@@ -2,19 +2,19 @@
 
 void TRACE_PRINT(TRACE_LEVEL_e _level, char* _output, ...)
 {
-	String levelStr = ""; 
+	char levelStr[10]; 
 
 	switch (_level)
 	{
 	case (TRACE_LEVEL_e)eTRACE_LEVEL_LOG:
 		{
-			levelStr = "[LOG]: ";
+			sprintf(levelStr, "[LOG]: ");
 		}
 		break;
 	
 	case (TRACE_LEVEL_e)eTRACE_LEVEL_ERROR:
 		{
-			levelStr = "[ERROR]: ";
+			sprintf(levelStr, "[ERROR]: ");
 		}
 		break;
 

@@ -15,6 +15,12 @@ typedef struct
 	char* strWifiPassword[MQTT_STRING_MAX_LENGTH];
 }WIFI_INFO_t;
 
+typedef enum
+{
+	eMQTT_CONNECTION_NOT_OK = 0,
+	eMQTT_CONNECTION_OK
+}MQTT_CONNECTION_STATE_e;
+
 #define __________CLASS_DEFINE__________
 
 class MQTT_custom
@@ -26,7 +32,7 @@ private:
 
 	char* strMQTTBrokerDomain;
 	uint32_t nMQTTPort;
-
+	MQTT_CONNECTION_STATE_e	eMQTTConnectionStatus;
 
 	char* strMQTTTopicPub;
 	char* strMQTTTopicSub;
@@ -40,6 +46,7 @@ public:
 	MQTT_custom();
 	MQTT_custom(char* _wifiSSID, char* _wifiPassword);
 	MQTT_custom(char* _wifiSSID, char* _wifiPassword, char* _MQTTBrokerDomain, uint32_t _MQTTPort);
+	~MQTT_custom();
 
 	//getter, setter
 	char*			getWifiSSID(void);
@@ -57,6 +64,7 @@ public:
 	char*			getCurrentPubMessage(void);
 	void			setCurrentPubMessage(char* _MQTTPubMessage);
 	char*			getCurrentSubMessage(void);
+	void			setCurrentSubMessage(char* _MQTTSubMessage);
 
 	void			Init();
 	void			DeInit();
@@ -67,7 +75,7 @@ public:
 	wl_status_t			connectWifi();
 	wl_status_t			connectWifi(char* _wifiSSID, char* _wifiPassword);
 	bool			disconnectWifi();
-	void			keepConnectMQTTBroker();
+	void			keepListenFromMQTTBroker();
 	void			stopConnectMQTTBroker();
 	void			publishMessage(char* _MQTTPubMessage);
 

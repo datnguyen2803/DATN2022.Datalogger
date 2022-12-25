@@ -3,7 +3,7 @@
 MQTT_custom::MQTT_custom()
 {
 	cWifiClient = WiFiClient();
-	cMQTTClient = PubSubClient();
+	cMQTTClient = PubSubClient(cWifiClient);
 
 	strWifiSSID = new char[MQTT_STRING_MAX_LENGTH];
 	strWifiPassword = new char[MQTT_STRING_MAX_LENGTH];
@@ -11,6 +11,7 @@ MQTT_custom::MQTT_custom()
 
 	strMQTTBrokerDomain = new char[MQTT_STRING_MAX_LENGTH];
 	nMQTTPort = 0;
+	eMQTTConnectionStatus = eMQTT_CONNECTION_NOT_OK;
 	eWifiConnectionStatus = (wl_status_t) WL_IDLE_STATUS;
 	strMQTTTopicPub = new char[MQTT_STRING_MAX_LENGTH];
 	strMQTTTopicSub = new char[MQTT_STRING_MAX_LENGTH];
@@ -21,6 +22,9 @@ MQTT_custom::MQTT_custom()
 
 MQTT_custom::MQTT_custom(char* _wifiSSID, char* _wifiPassword)
 {
+	cWifiClient = WiFiClient();
+	cMQTTClient = PubSubClient(cWifiClient);
+
 	strWifiSSID = new char[MQTT_STRING_MAX_LENGTH];
 	strWifiPassword = new char[MQTT_STRING_MAX_LENGTH];
 	eWifiConnectionStatus = (wl_status_t) WL_IDLE_STATUS;
@@ -49,6 +53,9 @@ MQTT_custom::MQTT_custom(char* _wifiSSID, char* _wifiPassword)
 
 MQTT_custom::MQTT_custom(char* _wifiSSID, char* _wifiPassword, char* _MQTTBrokerDomain, uint32_t _MQTTPort)
 {
+	cWifiClient = WiFiClient();
+	cMQTTClient = PubSubClient(cWifiClient);
+
 	strWifiSSID = new char[MQTT_STRING_MAX_LENGTH];
 	strWifiPassword = new char[MQTT_STRING_MAX_LENGTH];
 	eWifiConnectionStatus = (wl_status_t) WL_IDLE_STATUS;
@@ -155,8 +162,6 @@ wl_status_t MQTT_custom::connectWifi()
 
 wl_status_t MQTT_custom::connectWifi(char* _wifiSSID, char* _wifiPassword)
 {
-	uint8_t _tryTimes = 0;
-
 	if((_wifiSSID == NULL) || (_wifiPassword == NULL))
 	{
 		TRACE_ERROR("Input Wifi SSID or password is empty\n");
@@ -176,7 +181,56 @@ bool MQTT_custom::disconnectWifi()
 	return (bool)WiFi.disconnect();
 }
 
+void MQTT_custom::keepListenFromMQTTBroker()
+{
+	while ((MQTT_CONNECTION_STATE_e)eMQTT_CONNECTION_NOT_OK == eMQTTConnectionStatus) 
+	{
+    TRACE_LOG("Attempting MQTT connection...");
+    // Thực hiện kết nối với mqtt user và pass
+    if (cMQTTClient.connect("ESP8266Client")) 
+		{
+      TRACE_LOG("connected\n");
+			eMQTTConnectionStatus = (MQTT_CONNECTION_STATE_e)eMQTT_CONNECTION_OK;
+			cMQTTClient.subscribe(strMQTTTopicSub);
+    } 
+		else
+		{
+			eMQTTConnectionStatus = (MQTT_CONNECTION_STATE_e)eMQTT_CONNECTION_NOT_OK;
+			TRACE_ERROR("failed, rc=%d. Try again in 5 seconds\n", eMQTTConnectionStatus);
+			
+      // Đợi 5s
+      delay(5000);
+    }
+		yield();
+  }
+	cMQTTClient.loop();
+}
 
+void MQTT_custom::stopConnectMQTTBroker()
+{
+	TRACE_LOG("Disconnecting MQTT...");
+	cMQTTClient.disconnect();
+	TRACE_LOG("Successfully\n");
+}
+
+void MQTT_custom::publishMessage(char* _MQTTPubMessage)
+{
+	if(_MQTTPubMessage == NULL)
+	{
+		TRACE_ERROR("Publish message is empty. Can not publish\n");
+		return;
+	}
+	strncpy(strMQTTCurrentPubMessage, _MQTTPubMessage, MQTT_STRING_MAX_LENGTH);
+
+	if(strMQTTTopicPub == NULL)
+	{
+		TRACE_ERROR("Topic is not valid. Can not publish\n");
+		return;
+	}
+
+	cMQTTClient.publish(strMQTTTopicPub, strMQTTCurrentPubMessage);
+	//TRACE_LOG("Publish message %s success\n", strMQTTCurrentPubMessage);
+}
 
 char* MQTT_custom::getWifiSSID(void)
 {
@@ -213,6 +267,8 @@ void MQTT_custom::setupMQTT(char* _MQTTBrokerDomain, uint32_t _MQTTPort)
 
 	strncpy(strMQTTBrokerDomain, _MQTTBrokerDomain, MQTT_STRING_MAX_LENGTH);
 	nMQTTPort = _MQTTPort;
+
+	cMQTTClient.setServer(strMQTTBrokerDomain, nMQTTPort);
 }
 
 char* MQTT_custom::getMQTTTopicPub(void)
@@ -233,6 +289,7 @@ char* MQTT_custom::getMQTTTopicSub(void)
 void MQTT_custom::setMQTTTopicSub(char* _MQTTTopicSub)
 {
 	strncpy(strMQTTTopicSub, _MQTTTopicSub, MQTT_STRING_MAX_LENGTH);
+	cMQTTClient.subscribe(strMQTTTopicSub);
 }
 
 char* MQTT_custom::getCurrentPubMessage(void)
@@ -250,7 +307,10 @@ char* MQTT_custom::getCurrentSubMessage(void)
 	return strMQTTCurrentSubMessage;
 }
 
-
+void MQTT_custom::setCurrentSubMessage(char* _MQTTSubMessage)
+{
+	strncpy(strMQTTCurrentSubMessage, _MQTTSubMessage, MQTT_STRING_MAX_LENGTH);
+}
 
 
 
