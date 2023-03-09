@@ -9,20 +9,25 @@
 #define _____MACRO_DEFINE_____
 
 #define LED_PIN LED_BUILTIN
-#define WIFI_SSID "DATCHAOS"
-#define WIFI_PASSWORD "88888888"
+#define WIFI_SSID "VNPT T2"
+#define WIFI_PASSWORD "18061996"
+#define PUMP_00 D2
+#define PUMP_01 D5
+#define PUMP_02 D6
 
 #define MQTT_BROKER_DOMAIN 	"broker.emqx.io" 
 #define MQTT_BROKER_PORT		(1883U)
-#define MQTT_TOPIC_PUB "DATN.datalogger/test"
-#define MQTT_TOPIC_SUB "DATN.datalogger/test"
+#define MQTT_TOPIC_PUB "DATN.Pumpmonitor/Pump"
+#define MQTT_TOPIC_SUB "DATN.Pumpmonitor/Pump"
 #define MQTT_USERNAME "esp8266"
 #define MQTT_USERPASSWORD "123456"
 
 // GPIO_Custom testLed(LED_PIN, (GPIO_MODE_e)eGPIO_MODE_OUTPUT, (GPIO_STATE_e)eGPIO_STATE_LOW);
-
-
-MQTT_custom sensor;
+MQTT_custom pumpClient;
+GPIO_Custom ledState = GPIO_Custom(LED_PIN, (GPIO_MODE_e)eGPIO_MODE_OUTPUT);
+GPIO_Custom pump00x = GPIO_Custom(PUMP_00, (GPIO_MODE_e)eGPIO_MODE_INPUT);
+GPIO_Custom pump01x = GPIO_Custom(PUMP_01, (GPIO_MODE_e)eGPIO_MODE_INPUT);
+GPIO_Custom pump02x = GPIO_Custom(PUMP_02, (GPIO_MODE_e)eGPIO_MODE_INPUT);
 
 // void setup_wifi(void);
 void callback(char*, byte*, unsigned int);
@@ -33,12 +38,12 @@ void setup() {
 	delay(2000);
 	pinMode(LED_PIN, OUTPUT);
 
-	sensor.connectWifi(WIFI_SSID, WIFI_PASSWORD);
-	sensor.setupMQTT(MQTT_BROKER_DOMAIN, MQTT_BROKER_PORT);
-  sensor.cMQTTClient.setCallback(callback);
+	pumpClient.connectWifi(WIFI_SSID, WIFI_PASSWORD);
+	pumpClient.setupMQTT(MQTT_BROKER_DOMAIN, MQTT_BROKER_PORT);
+  	pumpClient.cMQTTClient.setCallback(callback);
 
-	sensor.setMQTTTopicPub(MQTT_TOPIC_PUB);
-	sensor.setMQTTTopicSub(MQTT_TOPIC_SUB);
+	pumpClient.setMQTTTopicPub(MQTT_TOPIC_PUB);
+	pumpClient.setMQTTTopicSub(MQTT_TOPIC_SUB);
 }
 
 
@@ -50,9 +55,9 @@ void callback(char* topic, byte* payload, unsigned int length)
     tempMessage[i] = (char)payload[i];
   }
 
-	sensor.setCurrentSubMessage(tempMessage);
+	pumpClient.setCurrentSubMessage(tempMessage);
 
-	Serial.printf("Message arrived [%s]: %s\n\n", sensor.getMQTTTopicSub(), sensor.getCurrentSubMessage());
+	Serial.printf("Message arrived [%s]: %s\n\n", pumpClient.getMQTTTopicSub(), pumpClient.getCurrentSubMessage());
 
 	if(strncmp(tempMessage, "led off", sizeof(tempMessage)) == 0)
 	{
@@ -61,6 +66,10 @@ void callback(char* topic, byte* payload, unsigned int length)
 	else	if(strncmp(tempMessage, "led on", sizeof(tempMessage)) == 0)
 	{
 		digitalWrite(LED_PIN, 0);
+	}
+	else
+	{
+		// do nothing
 	}
 }
 
@@ -105,8 +114,29 @@ void loop() {
 
 	// delay(2000);
 
-	sensor.keepListenFromMQTTBroker();
-	// sensor.publishMessage("led toggle");
+	char myString[100];
+
+	ledState.setState((GPIO_STATE_e)eGPIO_STATE_LOW);
+	pumpClient.keepListenFromMQTTBroker();
+
+
+	Serial.println("===== STATE OF PUMPS =====");
+	memset(myString, 0, 100);
+	sprintf(myString, "pump_A_00_%d", (uint8_t)pump00x.getState());
+	pumpClient.publishMessage(myString);
+	Serial.println(pumpClient.getCurrentPubMessage());
+
+	memset(myString, 0, 100);
+	sprintf(myString, "pump_A_01_%d", (uint8_t)pump01x.getState());
+	pumpClient.publishMessage(myString);
+	Serial.println(pumpClient.getCurrentPubMessage());
+
+	memset(myString, 0, 100);
+	sprintf(myString, "pump_A_02_%d", (uint8_t)pump02x.getState());
+	pumpClient.publishMessage(myString);
+	Serial.println(pumpClient.getCurrentPubMessage());
+
+	Serial.println("===========================\n\n\n\n\n");
 	delay(2000);
 
 }

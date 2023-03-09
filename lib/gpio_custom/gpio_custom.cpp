@@ -7,16 +7,16 @@ GPIO_Custom::GPIO_Custom(uint8_t _pin, GPIO_MODE_e _pinMode)
 	eState = (GPIO_STATE_e) eGPIO_STATE_LOW;
 	pinMode(nPin, (uint8_t)ePinMode);
 	
-	TRACE_LOG("=== Construct: Pin %d, mode %d", nPin, ePinMode);
+	// TRACE_LOG("=== Construct: Pin %d, mode %d", nPin, ePinMode);
 	if(eGPIO_MODE_OUTPUT == ePinMode)
 	{
 		digitalWrite(nPin, (uint8_t)eState);
-		TRACE_LOG(", state default %s ===\n", getGPIOModeName((GPIO_MODE_e)eState));
+		// TRACE_LOG(", state default %s ===\n", getGPIOModeName((GPIO_MODE_e)eState));
 	}
 	else
 	{
 		// do nothing
-		TRACE_LOG(" ===\n");
+		// TRACE_LOG(" ===\n");
 	}
 }
 
@@ -28,17 +28,17 @@ GPIO_Custom::GPIO_Custom(uint8_t _pin, GPIO_MODE_e _pinMode, GPIO_STATE_e _state
 	pinMode(nPin, (uint8_t)ePinMode);
 	
 	// TODO: add debug code here
-	TRACE_LOG("=== Construct: Pin %d, mode %d", nPin, ePinMode);
+	// TRACE_LOG("=== Construct: Pin %d, mode %d", nPin, ePinMode);
 	if(eGPIO_MODE_OUTPUT == ePinMode)
 	{
 		digitalWrite(nPin, (uint8_t)eState);
 		// TODO: add debug code here
-		TRACE_LOG(", state %s ===\n", getGPIOModeName((GPIO_MODE_e)eState));
+		// TRACE_LOG(", state %s ===\n", getGPIOModeName((GPIO_MODE_e)eState));
 	}
 	else
 	{
 		// do nothing
-		TRACE_LOG(" ===\n");
+		// TRACE_LOG(" ===\n");
 	}
 }
 
@@ -74,7 +74,7 @@ ERROR_TYPE_e GPIO_Custom::setPinMode(GPIO_MODE_e _newPinMode)
 	}
 	else
 	{
-		TRACE_ERROR("Same mode, no change");
+		// TRACE_ERROR("Same mode, no change");
 		retVal = eERROR_TYPE_HAPPEN;
 	}
 
