@@ -23,6 +23,8 @@
 
 #define ANALOG_PIN A0
 
+#define DATALOG_DELAY (15000U)
+
 #define MQTT_BROKER_DOMAIN 	"broker.emqx.io" 
 #define MQTT_BROKER_PORT		(1883U)
 #define MQTT_TOPIC_PUB "DATN.Pumpmonitor/Pump"
@@ -98,7 +100,7 @@ void loop() {
 
 	Serial.println("===== STATE OF PUMPS =====");
 	memset(myString, 0, 100);
-	sprintf(myString, "pump_A_00_%d", (uint8_t)pump0x.getState());
+	sprintf(myString, "pump_A_01_%d", (uint8_t)pump0x.getState());
 	pumpClient.publishMessage(myString);
 	if(pump0x.getState() == (GPIO_STATE_e)eGPIO_STATE_HIGH)
 	{
@@ -113,11 +115,10 @@ void loop() {
 		// digitalWrite(LED_0, 0);
 	}
 	Serial.println(pumpClient.getCurrentPubMessage());
-
-	delay(15000);
+	delay(DATALOG_DELAY);
 
 	memset(myString, 0, 100);
-	sprintf(myString, "pump_A_01_%d", (uint8_t)pump1x.getState());
+	sprintf(myString, "pump_A_02_%d", (uint8_t)pump1x.getState());
 	pumpClient.publishMessage(myString);
 	if(pump1x.getState() == (GPIO_STATE_e)eGPIO_STATE_HIGH)
 	{
@@ -130,11 +131,10 @@ void loop() {
 		led1x.setState((GPIO_STATE_e)eGPIO_STATE_LOW);
 	}
 	Serial.println(pumpClient.getCurrentPubMessage());
-
-	delay(15000);
+	delay(DATALOG_DELAY);
 
 	memset(myString, 0, 100);
-	sprintf(myString, "pump_A_02_%d", (uint8_t)pump2x.getState());
+	sprintf(myString, "pump_A_03_%d", (uint8_t)pump2x.getState());
 	pumpClient.publishMessage(myString);
 	if(pump2x.getState() == (GPIO_STATE_e)eGPIO_STATE_HIGH)
 	{
@@ -147,11 +147,10 @@ void loop() {
 		led2x.setState((GPIO_STATE_e)eGPIO_STATE_LOW);
 	}
 	Serial.println(pumpClient.getCurrentPubMessage());
-
-	delay(15000);
+	delay(DATALOG_DELAY);
 
 	memset(myString, 0, 100);
-	sprintf(myString, "pump_A_03_%d", (uint8_t)pump3x.getState());
+	sprintf(myString, "pump_A_04_%d", (uint8_t)pump3x.getState());
 	pumpClient.publishMessage(myString);
 	if(pump3x.getState() == (GPIO_STATE_e)eGPIO_STATE_HIGH)
 	{
@@ -164,7 +163,6 @@ void loop() {
 		led3x.setState((GPIO_STATE_e)eGPIO_STATE_LOW);
 	}
 	Serial.println(pumpClient.getCurrentPubMessage());
-
-	delay(15000);
+	delay(DATALOG_DELAY);
 
 }
